@@ -2374,3 +2374,119 @@ section {
 .foot .foot-in .foot-copy {
   padding-top: 12px;
 }
+
+/* ===== Menu mobile: hover, toque e foco nos itens ===== */
+.mpanel a {
+  position: relative
+}
+
+.mpanel a::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 3px;
+  height: 55%;
+  border-radius: 2px;
+  background: linear-gradient(180deg, var(--v3), var(--v5));
+  transform: translateY(-50%) scaleY(0);
+  transition: transform .3s cubic-bezier(.2, .7, .2, 1);
+  pointer-events: none
+}
+
+.mpanel a[aria-current="page"]::before {
+  transform: translateY(-50%) scaleY(1)
+}
+
+/* cada propriedade com o seu próprio atraso: a cascata de entrada não atrasa mais o hover */
+.mpanel a {
+  transition: opacity .3s ease, transform .4s cubic-bezier(.2, .7, .2, 1), color .2s ease, background-color .25s ease, padding-left .3s cubic-bezier(.2, .7, .2, 1)
+}
+
+.site[data-menu="true"] .mpanel a {
+  transition: opacity .3s ease calc(var(--i) * 55ms + 90ms), transform .4s cubic-bezier(.2, .7, .2, 1) calc(var(--i) * 55ms + 90ms), color .2s ease, background-color .25s ease, padding-left .3s cubic-bezier(.2, .7, .2, 1)
+}
+
+.mpanel a:active {
+  color: var(--tx);
+  padding-left: 16px;
+  background: linear-gradient(90deg, rgba(124, 58, 237, .2), transparent 75%)
+}
+
+.mpanel a:active::before {
+  transform: translateY(-50%) scaleY(1)
+}
+
+@media (hover:hover) {
+  .mpanel a:hover {
+    color: var(--tx);
+    padding-left: 16px;
+    background: linear-gradient(90deg, rgba(124, 58, 237, .14), transparent 75%)
+  }
+
+  .mpanel a:hover::before {
+    transform: translateY(-50%) scaleY(1)
+  }
+}
+
+.mpanel a[aria-current="page"]:hover,
+.mpanel a[aria-current="page"]:active {
+  color: var(--v3)
+}
+
+.mpanel a:focus-visible {
+  outline: 2px solid var(--v4);
+  outline-offset: -2px;
+  border-radius: 6px;
+  padding-left: 16px
+}
+
+@media (prefers-reduced-motion:reduce) {
+
+  .mpanel a,
+  .mpanel a::before {
+    transition: none !important
+  }
+}
+
+/* ===== Barra de rolagem (acende ao rolar) ===== */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--sb, rgba(139, 92, 246, 0.16));
+  /* parada: quase invisível; rolando: o JS define --sb */
+  border: 3px solid var(--bg);
+  border-radius: 999px;
+  transition: background-color 0.4s ease;
+}
+
+::-webkit-scrollbar-thumb:hover,
+::-webkit-scrollbar-thumb:active {
+  background-color: var(--v4);
+}
+
+/* mouse em cima / arrastando */
+::-webkit-scrollbar-corner {
+  background: var(--bg);
+}
+
+/* Firefox (não entende as regras acima) */
+@supports not selector(::-webkit-scrollbar) {
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: var(--sbf, rgba(139, 92, 246, 0.35)) var(--bg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::-webkit-scrollbar-thumb {
+    transition: none;
+  }
+}
