@@ -57,6 +57,26 @@ export function initEffects(): () => void {
     });
     refreshLoops();
 
+    // Barra de rolagem: acende enquanto a página rola e apaga quando para (o CSS lê --sb / --sbf;
+    // o Chrome só repinta a barra quando uma variável CSS muda, não com classe ou atributo)
+    const root = document.documentElement;
+    let scrollingTimer = 0;
+    const flagScrolling = () => {
+        root.style.setProperty('--sb', '#8B5CF6');
+        root.style.setProperty('--sbf', '#8B5CF6');
+        window.clearTimeout(scrollingTimer);
+        scrollingTimer = window.setTimeout(() => {
+            root.style.removeProperty('--sb');
+            root.style.removeProperty('--sbf');
+        }, 900);
+    };
+    on(window, 'scroll', flagScrolling, { passive: true });
+    stops.push(() => {
+        window.clearTimeout(scrollingTimer);
+        root.style.removeProperty('--sb');
+        root.style.removeProperty('--sbf');
+    });
+
     /* ------------------------------------------------------------------
      * 2) Links âncora (#secao). Placeholders (data-ph) nunca navegam.
      *    Sem reduce, a rolagem é animada e pode ser interrompida pelo usuário.
@@ -156,7 +176,17 @@ export function initEffects(): () => void {
         );
         after(a, () => heroSp.forEach((s) => (s.style.transform = '')));
     };
+    // Nome no cabeçalho: sobe da máscara ao carregar e de novo quando o hero reentra (sem sumir durante a rolagem)
+    const brandSp = Array.from(document.querySelectorAll<HTMLElement>('.brand .ln>span'));
+    const playBrand = () => {
+        brandSp.forEach((s) => hide(s, 'transform', 'translateY(110%)'));
+        const a = track(
+            animate(brandSp, { transform: ['translateY(110%)', 'translateY(0%)'] }, { duration: 0.85, delay: stagger(0.1, { startDelay: 0.15 }), ease }),
+        );
+        after(a, () => brandSp.forEach((s) => (s.style.transform = '')));
+    };
     playHeroEls();
+    playBrand();
 
     // Revelação repetível: esconde quando o elemento sai da tela por completo e toca de novo
     // sempre que ele volta (em toda visita, não só na primeira).
@@ -222,6 +252,7 @@ export function initEffects(): () => void {
                     armed = false;
                     playHeroEls();
                     playHeroTitle();
+                    playBrand();
                     window.dispatchEvent(new Event('hero:replay'));
                 }
             },
@@ -265,6 +296,21 @@ export function initEffects(): () => void {
             });
         });
     });
+
+    // Nome no rodapé: sobe da máscara toda vez que o rodapé aparece
+    const footSp = Array.from(document.querySelectorAll<HTMLElement>('.foot-brand .ln>span'));
+    const foot = document.querySelector('.foot');
+    if (foot && footSp.length) {
+        const hideFoot = () => footSp.forEach((s) => hide(s, 'transform', 'translateY(110%)'));
+        hideFoot();
+        reveal(foot, 0.3, hideFoot, () => {
+            const a = track(
+                animate(footSp, { transform: ['translateY(110%)', 'translateY(0%)'] }, { duration: 0.85, delay: stagger(0.1, { startDelay: 0.1 }), ease }),
+            );
+            after(a, () => footSp.forEach((s) => (s.style.transform = '')));
+            return a;
+        });
+    }
 
     /* ------------------------------------------------------------------
      * 4) Efeitos ligados à rolagem (parallax discreto e barra de progresso)

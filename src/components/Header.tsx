@@ -61,7 +61,7 @@ export default function Header() {
         <header className="site" data-menu={menuOpen ? 'true' : 'false'}>
             <div className="wrap">
                 <a className="brand" href="#inicio" aria-label={`${PROFILE.name}, ir para o início`}>
-                    {PROFILE.name}
+                    <span className="ln"><span>{PROFILE.name}</span></span>
                 </a>
                 <nav className="nav-d" aria-label="Principal" ref={navRef}>
                     {NAV.map((n) => (

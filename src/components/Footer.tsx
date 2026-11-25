@@ -12,7 +12,7 @@ export default function Footer() {
             <div className="wrap foot-in">
                 <a className="foot-brand" href="#inicio" aria-label={`${PROFILE.name}, voltar ao início`}>
                     <span>
-                        <b>{PROFILE.name}</b>
+                        <b className="ln"><span>{PROFILE.name}</span></b>
                         <small>{PROFILE.role}</small>
                     </span>
                 </a>
